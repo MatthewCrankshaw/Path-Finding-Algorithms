@@ -26,6 +26,9 @@ public:
 	friend void copyDisplayMapToMaze(GridWorld &gWorld, AstarSearch* astar);
 
 	void initialise(int startX, int startY, int goalX, int goalY);
+	void printMaze();
+
+	bool computeShortestPath(int &numOfVertexExpansions, int &maxQlen, int &vertexAccesses);
 	
 private: 
 	vector<vector<AstarCell> > maze;

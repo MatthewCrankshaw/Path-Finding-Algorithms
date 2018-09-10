@@ -181,7 +181,7 @@ void copyDisplayMapToMaze(GridWorld &gWorld, LpaStar* lpa){
 void copyDisplayMapToMaze(GridWorld &gWorld, AstarSearch* astar){
 	for(int i=0; i < gWorld.getGridWorldRows(); i++){
 	   for(int j=0; j < gWorld.getGridWorldCols(); j++){
-			astar->maze[i][j].type = gWorld.map[i][j].col;
+			astar->maze[i][j].type = gWorld.map[i][j].type;
 			astar->maze[i][j].x = gWorld.map[i][j].col; 
 			astar->maze[i][j].y = gWorld.map[i][j].row;
 		}
@@ -357,12 +357,14 @@ void runSimulation(char *fileName){
 	cout << "(goal.col = " << goal.col << ", goal.row = " << goal.row << ")" << endl;
 	
 	astar_search->initialise(start.col, start.row, goal.col, goal.row);
+	copyDisplayMapToMaze(grid_world, astar_search);
+	astar_search->printMaze();
 	
 	//----------------------------------------------------------------
 	//LPA*
-	lpa_star = new LpaStar(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
-	lpa_star->initialise(start.col, start.row, goal.col, goal.row);
-	copyDisplayMapToMaze(grid_world, lpa_star);
+	//lpa_star = new LpaStar(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
+	//lpa_star->initialise(start.col, start.row, goal.col, goal.row);
+	//copyDisplayMapToMaze(grid_world, lpa_star);
 	//----------------------------------------------------------------
 		
 	worldBoundary = grid_world.getWorldBoundary();
@@ -384,6 +386,9 @@ void runSimulation(char *fileName){
 			 else
 			     grid_world.displayMap();
 			 
+			 bool pf;
+			 int numExpan = 0, maxQLen = 0, numAcces = 0;
+			 
 			 switch(action){
 			 	case 1000:
 					//Code will go here for testing purposes
@@ -396,6 +401,8 @@ void runSimulation(char *fileName){
 					
 					astar_search->initialise(start.col, start.row, goal.col, goal.row);
 					copyDisplayMapToMaze(grid_world, astar_search);
+					astar_search->printMaze();
+					pf = astar_search->computeShortestPath(numExpan, maxQLen, numAcces);
 					break;
 
                 case 1001:  //ENTER KEY

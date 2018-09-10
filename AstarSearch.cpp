@@ -72,7 +72,20 @@ void AstarSearch::initialise(int startX, int startY, int goalX, int goalY){
 	cout << "Positions of end: X:" << goal->x << " Y:" << goal->y << endl;
 	cout << "initial distance from goal euclid: " << calculateH_euclid(start->x, start->y) << endl;
 	cout << "initial distance from goal manhat: " << calculateH_manhat(start->x, start->y) << endl;
-	cout << "====================================================================" << endl;
+	cout << "====================================================================" << endl;	
+}
+
+bool AstarSearch::computeShortestPath(int &numOfVertexExpansions, int &maxQlen, int &vertexAccesses){
+	return false;
+}
+
+void AstarSearch::printMaze(){
+	for(int i = 0; i < cols; i ++){
+		for(int j = 0; j < rows; j++){
+			cout << (char)maze[j][i].type << " ";
+		}
+		cout << endl;
+	}
 }
 
 int AstarSearch::maxValue(int v1, int v2){
