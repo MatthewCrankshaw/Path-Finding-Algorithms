@@ -178,6 +178,24 @@ void copyDisplayMapToMaze(GridWorld &gWorld, LpaStar* lpa){
 	
 }
 
+void copyDisplayMapToMaze(GridWorld &gWorld, AstarSearch* astar){
+	for(int i=0; i < gWorld.getGridWorldRows(); i++){
+	   for(int j=0; j < gWorld.getGridWorldCols(); j++){
+			astar->maze[i][j].type = gWorld.map[i][j].col;
+			astar->maze[i][j].x = gWorld.map[i][j].col; 
+			astar->maze[i][j].y = gWorld.map[i][j].row;
+		}
+	}
+	
+	vertex startV = gWorld.getStartVertex();
+	vertex goalV = gWorld.getGoalVertex();
+	
+	astar->start->x = gWorld.map[startV.row][startV.col].col;
+	astar->start->y = gWorld.map[startV.row][startV.col].row;
+	
+	astar->goal->x = gWorld.map[goalV.row][goalV.col].col;
+	astar->goal->y = gWorld.map[goalV.row][goalV.col].row;
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // FUNCTION PROTOTYPES
@@ -373,6 +391,11 @@ void runSimulation(char *fileName){
 					grid_world.initSystemOfCoordinates();
 					grid_world.loadMapAndDisplay("grid_Dstar_journal.txt");
 					grid_world.initialiseMapConnections();
+					start = grid_world.getStartVertex();
+					goal = grid_world.getGoalVertex();
+					
+					astar_search->initialise(start.col, start.row, goal.col, goal.row);
+					copyDisplayMapToMaze(grid_world, astar_search);
 					break;
 
                 case 1001:  //ENTER KEY
@@ -382,7 +405,7 @@ void runSimulation(char *fileName){
 
 				case 1: //Block selected cell
 				 		
-                        if( (rowSelected > 1) && (rowSelected < GRIDWORLD_ROWS) && (colSelected > 1) && (colSelected < GRIDWORLD_COLS)){
+							if( (rowSelected > 1) && (rowSelected < GRIDWORLD_ROWS) && (colSelected > 1) && (colSelected < GRIDWORLD_COLS)){
 							grid_world.setMapTypeValue(rowSelected-1, colSelected-1, '1');
 							grid_world.initialiseMapConnections(); 
 							

@@ -67,8 +67,12 @@ void AstarSearch::initialise(int startX, int startY, int goalX, int goalY){
 	maze[start->y][start->x].g = start->g;
 	maze[goal->y][goal->x].g = goal->g;
 	
-	cout << "H value euclid: " << calculateH_euclid(start->x, start->y) << endl;
-	cout << "H value manhat: " << calculateH_manhat(start->x, start->y) << endl;
+	cout << "Debug info dump: ==================================================" << endl;
+	cout << "Position of start: X:" << start->x << " Y:" << start->y << endl;
+	cout << "Positions of end: X:" << goal->x << " Y:" << goal->y << endl;
+	cout << "initial distance from goal euclid: " << calculateH_euclid(start->x, start->y) << endl;
+	cout << "initial distance from goal manhat: " << calculateH_manhat(start->x, start->y) << endl;
+	cout << "====================================================================" << endl;
 }
 
 int AstarSearch::maxValue(int v1, int v2){
