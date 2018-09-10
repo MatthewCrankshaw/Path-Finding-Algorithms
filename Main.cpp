@@ -66,6 +66,7 @@ int qLengthAfterSearch;
 
 ///////////////////////////////////////////////////////////////////////////////
 LpaStar* lpa_star;
+AstarSearch* astar_search;
 
 GridWorld grid_world;
 
@@ -88,9 +89,9 @@ void copyMazeToDisplayMap(GridWorld &gWorld, LpaStar* lpa){
 			for(int k=0; k < 2; k++){
 			  gWorld.map[i][j].key[k] = lpa->maze[i][j].key[k];			  
 			}
-			
 		}
 	}
+	
 	gWorld.map[lpa->start->y][lpa->start->x].h = lpa->start->h;
 	gWorld.map[lpa->start->y][lpa->start->x].g = lpa->start->g;
 	gWorld.map[lpa->start->y][lpa->start->x].rhs = lpa->start->rhs;
@@ -110,6 +111,42 @@ void copyMazeToDisplayMap(GridWorld &gWorld, LpaStar* lpa){
 			  gWorld.map[lpa->goal->y][lpa->goal->x].key[k] = lpa->goal->key[k];			  
 	}
 	
+}
+
+void copyMazeToDisplayMap(GridWorld &gWorld, AstarSearch* astar){ 
+	for(int i=0; i < gWorld.getGridWorldRows(); i++){
+		for(int j=0; j < gWorld.getGridWorldCols(); j++){
+			gWorld.map[i][j].type = astar->maze[i][j].type;
+			gWorld.map[i][j].h = astar->maze[i][j].h;
+			gWorld.map[i][j].g = astar->maze[i][j].g;
+			gWorld.map[i][j].rhs = 0;
+			gWorld.map[i][j].row = astar->maze[i][j].y;
+			gWorld.map[i][j].col = astar->maze[i][j].x;
+			
+			for(int k=0; k < 2; k++){
+				gWorld.map[i][j].key[k] = 0;
+			}
+		}
+	}
+	
+	gWorld.map[astar->start->y][astar->start->x].h = astar->start->h;
+	gWorld.map[astar->start->y][astar->start->x].g = astar->start->g;
+	gWorld.map[astar->start->y][astar->start->x].rhs = 0;
+	gWorld.map[astar->start->y][astar->start->x].row = astar->start->y;
+	gWorld.map[astar->start->y][astar->start->x].col = astar->start->x;
+	for(int k=0; k < 2; k++){
+		gWorld.map[astar->start->y][astar->start->x].key[k] = 0;			  
+	}
+	
+	
+	gWorld.map[astar->goal->y][astar->goal->x].h = astar->goal->h;
+	gWorld.map[astar->goal->y][astar->goal->x].g = astar->goal->g;
+	gWorld.map[astar->goal->y][astar->goal->x].rhs = 0;
+	gWorld.map[astar->goal->y][astar->goal->x].row = astar->goal->y;
+	gWorld.map[astar->goal->y][astar->goal->x].col = astar->goal->x;
+	for(int k=0; k < 2; k++){
+		gWorld.map[astar->goal->y][astar->goal->x].key[k] = 0;			  
+	}
 }
 
 //--------------------------------------------------------------
@@ -288,23 +325,25 @@ void runSimulation(char *fileName){
 	srand(time(NULL));  // Seed the random number generator
 			
 	//Initialise the world boundaries
-    grid_world.initSystemOfCoordinates();
+	grid_world.initSystemOfCoordinates();
 	grid_world.loadMapAndDisplay(fileName);
 	grid_world.initialiseMapConnections();
 	
 	//----------------------------------------------------------------
-	//LPA*
-	lpa_star = new LpaStar(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
+	//ASTAR
+	astar_search = new AstarSearch(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
 	vertex start = grid_world.getStartVertex();
 	vertex goal = grid_world.getGoalVertex();
 	
 	cout << "(start.col = " << start.col << ", start.row = " << start.row << ")" << endl;
 	cout << "(goal.col = " << goal.col << ", goal.row = " << goal.row << ")" << endl;
 	
-	lpa_star->initialise(start.col, start.row, goal.col, goal.row);
+	//astar_search->initialise(start.col, start.row, goal.col, goal.row);
 	
-	//lpa_star->copyMazeToDisplayMap(grid_world);
-	//copyMazeToDisplayMap(grid_world, lpa_star);
+	//----------------------------------------------------------------
+	//LPA*
+	lpa_star = new LpaStar(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
+	lpa_star->initialise(start.col, start.row, goal.col, goal.row);
 	copyDisplayMapToMaze(grid_world, lpa_star);
 	//----------------------------------------------------------------
 		
@@ -613,6 +652,8 @@ void runSimulation(char *fileName){
 			  setvisualpage(page);
 			  page = !page;  //switch to another page
 	}
+	free(lpa_star);
+	free(astar_search);
 }
 
 

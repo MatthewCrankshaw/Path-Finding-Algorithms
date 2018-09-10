@@ -28,14 +28,14 @@ public:
 
 private:
 	
-    vector<vector<LpaStarCell> > maze;   
-    LpaStarCell l;
-    vector<LpaStarCell* > U; //Priority Queue
-    LpaStarCell* start;
-    LpaStarCell* goal;
+	vector<vector<LpaStarCell> > maze;   
+	LpaStarCell l;
+	vector<LpaStarCell* > U; //Priority Queue
+	LpaStarCell* start;
+	LpaStarCell* goal;
 
-    int rows;
-    int cols;
+	int rows;
+	int cols;
 
 };
 

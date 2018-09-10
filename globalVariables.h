@@ -175,23 +175,38 @@ extern int NAPOLEON;
 
 struct LpaStarCell
 {
-    LpaStarCell* move[DIRECTIONS];
+	LpaStarCell* move[DIRECTIONS];
     
 	double linkCost[DIRECTIONS];
   
-    int x, y;
+	int x, y;
 
 	double g;
-    double rhs;
+	double rhs;
 	double h;
-    double key[2];
+	double key[2];
 	
-	 //---------------------
-	 //TYPE: 0 - traversable, 1 - blocked, 9 - unknown, 6 - start vertex, 7 - goal vertex
-	 char type;
-	 //----------------------
+	//---------------------
+	//TYPE: 0 - traversable, 1 - blocked, 9 - unknown, 6 - start vertex, 7 - goal vertex
+	char type;
+	//----------------------
 	
 };
+
+struct AstarCell
+{
+	AstarCell *move[DIRECTIONS];
+	
+	double linkCost[DIRECTIONS]; 
+	
+	int x, y; 
+	double g; 
+	double h;
+	
+	char type;
+	
+};
+
 
 extern bool SHOW_MAP_DETAILS;
 

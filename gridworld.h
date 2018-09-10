@@ -22,6 +22,7 @@
 #include "globalvariables.h"
 #include "graphics.h"
 #include "LpaStar.h"
+#include "AstarSearch.h"
 
 
 class GridWorld{
@@ -209,6 +210,8 @@ public:
 	// friend functions
 	friend void copyMazeToDisplayMap(GridWorld &gWorld, LpaStar* lpa);
 	friend void copyDisplayMapToMaze(GridWorld &gWorld, LpaStar* lpa);
+	friend void copyMazeToDisplayMap(GridWorld &gWorld, AstarSearch* astar);
+	friend void copyDisplayMapToMaze(GridWorld &gWorld, AstarSearch* astar);
 	
 private:
 	int cellWidth;
