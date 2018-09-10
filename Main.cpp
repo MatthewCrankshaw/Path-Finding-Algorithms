@@ -338,7 +338,7 @@ void runSimulation(char *fileName){
 	cout << "(start.col = " << start.col << ", start.row = " << start.row << ")" << endl;
 	cout << "(goal.col = " << goal.col << ", goal.row = " << goal.row << ")" << endl;
 	
-	//astar_search->initialise(start.col, start.row, goal.col, goal.row);
+	astar_search->initialise(start.col, start.row, goal.col, goal.row);
 	
 	//----------------------------------------------------------------
 	//LPA*

@@ -66,5 +66,35 @@ void AstarSearch::initialise(int startX, int startY, int goalX, int goalY){
 	
 	maze[start->y][start->x].g = start->g;
 	maze[goal->y][goal->x].g = goal->g;
+	
+	cout << "H value euclid: " << calculateH_euclid(start->x, start->y) << endl;
+	cout << "H value manhat: " << calculateH_manhat(start->x, start->y) << endl;
+}
+
+int AstarSearch::maxValue(int v1, int v2){
+	if(v1 >= v2){
+		return v1;
+	} else {
+		return v2;
+	}	
+}
+
+//calculate the euclidean distance between a point and the goal
+double AstarSearch::calculateH_euclid(int x, int y){
+	int diff1 = abs(goal->y - y); 
+	int diff2 = abs(goal->x - x);
+	
+	int p1 = pow(diff1, 2);
+	int p2 = pow(diff2, 2);
+	
+	return (double)sqrt(p1 + p2); 
+}
+
+//calculate the manhatten distance between a point and the goal
+double AstarSearch::calculateH_manhat(int x, int y){
+	int diff1 = abs(goal->y - y);
+	int diff2 = abs(goal->x - x);
+	
+	return (double)maxValue(diff1, diff2);
 }
   

@@ -37,6 +37,11 @@ private:
 	int rows; 
 	int cols;
 
+
+	int maxValue(int v1, int v2); 
+	double calculateH_euclid(int x, int y);
+	double calculateH_manhat(int x, int y);
+
 };
 
 
