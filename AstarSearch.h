@@ -32,7 +32,7 @@ public:
 	
 private: 
 	vector<vector<AstarCell> > maze;
-	vector<AstarCell> visited;
+	vector<AstarCell> open, closed;
 
 	AstarCell * start; 
 	AstarCell * goal;
@@ -44,7 +44,11 @@ private:
 	int maxValue(int v1, int v2); 
 	double calculateH_euclid(int x, int y);
 	double calculateH_manhat(int x, int y);
-
+	double calculateFCost(const AstarCell a);
+	AstarCell lowestFCostInOpen();
+	bool isGoal(AstarCell a);
+	void generateChildNodes(AstarCell &node);
+	int inOpenArray(const AstarCell *a);
 };
 
 

@@ -393,11 +393,6 @@ void runSimulation(char *fileName){
 			 	case 1000:
 					//Code will go here for testing purposes
 					//Space Key
-					grid_world.initSystemOfCoordinates();
-					grid_world.loadMapAndDisplay("grid_Dstar_journal.txt");
-					grid_world.initialiseMapConnections();
-					start = grid_world.getStartVertex();
-					goal = grid_world.getGoalVertex();
 					
 					astar_search->initialise(start.col, start.row, goal.col, goal.row);
 					copyDisplayMapToMaze(grid_world, astar_search);
