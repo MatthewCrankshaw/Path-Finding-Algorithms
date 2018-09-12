@@ -11,28 +11,7 @@
 
 using namespace std;
 
-/*
-// The cell structure is defined in the global variables as below
-// is defined in global variables as the main function also needs to access these fields
-
-struct AstarCell
-{
-	AstarCell *move[DIRECTIONS];
-	
-	double linkCost[DIRECTIONS]; 
-	
-	int x, y; 
-	double g; 
-	double h;
-	
-	char type;
-	
-};
-*/
-
 AstarSearch::AstarSearch(int rows_, int cols_){
-	//ctor
-	
 	rows = rows_;
 	cols = cols_;
 	
@@ -47,7 +26,6 @@ AstarSearch::AstarSearch(int rows_, int cols_){
 }
 
 AstarSearch::~AstarSearch(){
-	//dtor
 	free(start);
 	free(goal);
 }
@@ -67,31 +45,16 @@ void AstarSearch::initialise(int startX, int startY, int goalX, int goalY){
 	
 	maze[start->x][start->y].g = start->g;
 	maze[goal->x][goal->y].g = goal->g;
-	
-	cout << "Debug info dump: ==================================================" << endl;
-	cout << "Position of start: X:" << start->x << " Y:" << start->y << endl;
-	cout << "Positions of end: X:" << goal->x << " Y:" << goal->y << endl;
-	cout << "initial distance from goal euclid: " << calculateH_euclid(start->x, start->y) << endl;
-	cout << "initial distance from goal manhat: " << calculateH_manhat(start->x, start->y) << endl;
-	cout << "====================================================================" << endl;	
 }
 
 
 
 bool AstarSearch::computeShortestPath(int &numOfVertexExpansions, int &maxQlen, int &vertexAccesses){
-	double diag = sqrt(2);
-	double cost[8] = {
-		diag, 1, diag,
-		1      , 1,
-		diag, 1, diag
-	};
-	
 	// First put the starting node into the open list
 	start->h = calculateH_euclid(start->x, start->y);
 	start->g = 0;
 	start->parent = NULL;
 	open.push_back(*start);
-	cout << "position of start node is: " << open[0].x << " " << open[0].y << " h: " << open[0].h << endl;
 	
 	AstarCell node_current;
 	while(!open.empty()){
@@ -190,11 +153,11 @@ void AstarSearch::generateChildNodes(AstarCell &node){
 		node.move[i]->x = x[i];
 		node.move[i]->y = y[i];
 		node.move[i]->type = maze[y[i]][x[i]].type;
-		node.move[i]->g = cost[i];
+		node.move[i]->g = cost[i];// + node.g;
 		node.move[i]->h = calculateH_euclid(x[i], y[i]);
 		
-		//maze[y[i]][x[i]].g = node.move[i]->g;
-		//maze[y[i]][x[i]].h = node.move[i]->h;
+		maze[y[i]][x[i]].g = node.move[i]->g;
+		maze[y[i]][x[i]].h = node.move[i]->h;
 	}
 }
 
@@ -223,6 +186,7 @@ bool AstarSearch::isGoal(const AstarCell a){
 		return true;
 	}
 	return false;
+	
 }
 
 AstarCell AstarSearch::lowestFCostInOpen(){
@@ -231,13 +195,15 @@ AstarCell AstarSearch::lowestFCostInOpen(){
 	
 	lowest.g = 10000.00;
 	lowest.h = 10000.00;
-	
+	cout << "========================================================" << endl;
 	for(vector<AstarCell>::iterator itr = open.begin(); itr != open.end(); itr++){
+		printNode(&(*itr));
 		if(calculateFCost(*itr) < calculateFCost(lowest)){
 			lowest = *itr;
 			lowItr = itr;
 		}
 	}
+	cout << "=========================================================" << endl;
 	open.erase(lowItr);
 	return lowest;
 }

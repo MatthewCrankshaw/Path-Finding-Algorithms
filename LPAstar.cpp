@@ -8,14 +8,14 @@
 
 
  LpaStar::LpaStar(int rows_, int cols_){
-		rows = rows_;
-	    cols = cols_;
-	 
-		 //Allocate memory 
-		 maze.resize(rows);
-		 for(int i=0; i < rows; i++){
-		   maze[i].resize(cols);
-		 }
+	rows = rows_;
+	cols = cols_;
+ 
+	//Allocate memory 
+	maze.resize(rows);
+	for(int i=0; i < rows; i++){
+	  maze[i].resize(cols);
+	}
 }
 
 void LpaStar::initialise(int startX, int startY, int goalX, int goalY){

@@ -41,6 +41,14 @@ private:
 	int rows; 
 	int cols;
 
+	//The costs are set
+	const double diag = sqrt(2);
+	const double cost[8] = {
+		diag, 1, diag,
+		1      , 1,
+		diag, 1, diag
+	};
+
 	int maxValue(int v1, int v2); 
 	double calculateH_euclid(int x, int y);
 	double calculateH_manhat(int x, int y);

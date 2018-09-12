@@ -67,6 +67,7 @@ int qLengthAfterSearch;
 ///////////////////////////////////////////////////////////////////////////////
 LpaStar* lpa_star;
 AstarSearch* astar_search;
+dstar* dstarLite;
 
 GridWorld grid_world;
 
@@ -351,16 +352,9 @@ void runSimulation(char *fileName){
 	
 	//----------------------------------------------------------------
 	//ASTAR
-	astar_search = new AstarSearch(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
-	vertex start = grid_world.getStartVertex();
-	vertex goal = grid_world.getGoalVertex();
-	
-	cout << "(start.col = " << start.col << ", start.row = " << start.row << ")" << endl;
-	cout << "(goal.col = " << goal.col << ", goal.row = " << goal.row << ")" << endl;
-	
-	astar_search->initialise(start.col, start.row, goal.col, goal.row);
-	copyDisplayMapToMaze(grid_world, astar_search);
-	astar_search->printMaze();
+	bool pf;
+	int numExpan = 0, maxQLen = 0, numAcces = 0;
+	vertex start, goal;
 	
 	//----------------------------------------------------------------
 	//LPA*
@@ -373,6 +367,11 @@ void runSimulation(char *fileName){
 	deviceBoundary = grid_world.getDeviceBoundary();
 	GRIDWORLD_ROWS = grid_world.getGridWorldRows();
 	GRIDWORLD_COLS = grid_world.getGridWorldCols();
+	
+	//----------------------------------------------------------------
+	//D* Lite 
+	dstarLite = new dstar(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
+	dstarLite->initialise(start.col, start.row, goal.col, goal.row);
 	
 	//setvisualpage(page);
 	
@@ -387,15 +386,22 @@ void runSimulation(char *fileName){
 				 grid_world.displayMapWithDetails();
 			 else
 			     grid_world.displayMap();
-			 
-			 bool pf;
-			 int numExpan = 0, maxQLen = 0, numAcces = 0;
-			 
+			
 			 switch(action){
 			 	case 1000:
 					//Code will go here for testing purposes
 					//Space Key
-					
+					astar_search = new AstarSearch(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
+					start = grid_world.getStartVertex();
+					goal = grid_world.getGoalVertex();
+
+					cout << "(start.col = " << start.col << ", start.row = " << start.row << ")" << endl;
+					cout << "(goal.col = " << goal.col << ", goal.row = " << goal.row << ")" << endl;
+
+					astar_search->initialise(start.col, start.row, goal.col, goal.row);
+					copyDisplayMapToMaze(grid_world, astar_search);
+					astar_search->printMaze();
+
 					astar_search->initialise(start.col, start.row, goal.col, goal.row);
 					copyDisplayMapToMaze(grid_world, astar_search);
 					astar_search->printMaze();
@@ -406,8 +412,6 @@ void runSimulation(char *fileName){
 						copyMazeToDisplayMap(grid_world, astar_search);
 						grid_world.displayPathAstar();
 					}
-					action = -1;
-					Sleep(1000);
 					break;
 
 				 case 1001:  //ENTER KEY

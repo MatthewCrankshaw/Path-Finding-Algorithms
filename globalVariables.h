@@ -206,6 +206,25 @@ struct AstarCell
 	
 };
 
+typedef struct dStarCell
+{
+	dStarCell* move[DIRECTIONS];
+    
+	double linkCost[DIRECTIONS];
+  
+	int x, y;
+
+	double g;
+	double rhs;
+	double h;
+	double key[2];
+	
+	//---------------------
+	//TYPE: 0 - traversable, 1 - blocked, 9 - unknown, 6 - start dStarNode, 7 - goal dStarNode
+	char type;
+	//----------------------
+} dStarNode;
+
 
 extern bool SHOW_MAP_DETAILS;
 
