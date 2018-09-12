@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <algorithm>    
 #include <math.h>
-#include <climits>
+#include <cstring>
 
 #include "AstarSearch.h"
 #include "globalVariables.h"
@@ -65,8 +65,8 @@ void AstarSearch::initialise(int startX, int startY, int goalX, int goalY){
 	goal->g = 0; 
 	goal->h = 0;
 	
-	maze[start->y][start->x].g = start->g;
-	maze[goal->y][goal->x].g = goal->g;
+	maze[start->x][start->y].g = start->g;
+	maze[goal->x][goal->y].g = goal->g;
 	
 	cout << "Debug info dump: ==================================================" << endl;
 	cout << "Position of start: X:" << start->x << " Y:" << start->y << endl;
@@ -79,14 +79,22 @@ void AstarSearch::initialise(int startX, int startY, int goalX, int goalY){
 
 
 bool AstarSearch::computeShortestPath(int &numOfVertexExpansions, int &maxQlen, int &vertexAccesses){
+	double diag = sqrt(2);
+	double cost[8] = {
+		diag, 1, diag,
+		1      , 1,
+		diag, 1, diag
+	};
+	
 	// First put the starting node into the open list
 	start->h = calculateH_euclid(start->x, start->y);
 	start->g = 0;
+	start->parent = NULL;
 	open.push_back(*start);
 	cout << "position of start node is: " << open[0].x << " " << open[0].y << " h: " << open[0].h << endl;
 	
+	AstarCell node_current;
 	while(!open.empty()){
-		AstarCell node_current;
 		node_current = lowestFCostInOpen();
 		
 		//if the current node is the goal node then you have found the goal
@@ -96,35 +104,46 @@ bool AstarSearch::computeShortestPath(int &numOfVertexExpansions, int &maxQlen, 
 		}
 		//generate the successor nodes
 		generateChildNodes(node_current);
+		
 		for(int i = 0; i < DIRECTIONS; i++){
-			//is in open list
-			int succG;
-			//returns null if not found
-			succG = inOpenArray(node_current.move[i]);
-			cout << "in open array " << succG << endl;
-			if(succG != -1){
-				if(succG <= node_current.move[i]->g) continue;
-			}//else if(){ //is in the closed list
+			double currCost = node_current.g + cost[i];
+			AstarCell *next = node_current.move[i];
+			//is in the lists
+			int openG, closedG;
+			if(next->type != '1'){
 				
-			//}else{ //is not in any list
+				//returns null if not found
+				openG = inOpenArray(next);
+				closedG = inClosedArray(next);
 				
-			//}
+				if(openG != -1){
+					//cout << "og" << openG << " i " << i << endl;
+					if(openG <= currCost) continue;
+				}else if(closedG != -1){ //is in the closed list
+					//cout << "cg" << closedG << endl;
+					if(closedG <= currCost) continue;
+				}else{ //is not in any list
+					open.push_back(*next);
+				}
+			}
 		}
-		
-		
-		//remove
-		break;
+		printNode(&node_current);
+		closed.push_back(node_current);
 	}
-	
-	
-	
-	return false;
+	if(!isGoal(node_current)){
+		cout << "goal not found: open list is empty" << endl;
+		exit(1);
+	}
+}
+
+void AstarSearch::printNode(AstarCell *a){
+	cout << "x " << a->x  << " y " << a->y << " g " << a->g << " h " << a->h << " type " << a->type << endl;
 }
 
 void AstarSearch::printMaze(){
-	for(int i = 0; i < cols; i ++){
-		for(int j = 0; j < rows; j++){
-			cout << (char)maze[j][i].type << " ";
+	for(int i = 0; i < rows; i ++){
+		for(int j = 0; j < cols; j++){
+			cout << (char)maze[i][j].type << " ";
 		}
 		cout << endl;
 	}
@@ -156,17 +175,16 @@ void AstarSearch::generateChildNodes(AstarCell &node){
 		
 		node.move[i] = new AstarCell;
 		//if the node is off the grid set not traversable
-		if(x[i] < 0 || x[i] > rows || y[i] < 0 || y[i] > cols){
-			node.move[i]->type = 1;
+		if(x[i] < 0 || x[i] > cols || y[i] < 0 || y[i] > rows){
+			node.move[i]->type = '1';
 			continue;
 		}
 		
 		node.move[i]->x = x[i];
 		node.move[i]->y = y[i];
 		node.move[i]->type = maze[y[i]][x[i]].type;
-		node.move[i]->g = node.g + cost[i];
+		node.move[i]->g = cost[i];
 		node.move[i]->h = calculateH_euclid(x[i], y[i]);
-		cout << "next type " << (char)node.move[i]->type << " x " << x[i] << " y " << y[i] << " cost " << cost[i] << " h " << node.move[i]->h << endl;
 	}
 }
 
@@ -174,6 +192,16 @@ void AstarSearch::generateChildNodes(AstarCell &node){
 int AstarSearch::inOpenArray(const AstarCell *a){
 	for(auto node : open){
 		if((a->x == node.x) && (a->y == node.y)){ 
+			return node.g;
+		}
+	}
+	return -1;
+}
+
+//returns -1 if not in the closed array or returns the g cost
+int AstarSearch::inClosedArray(const AstarCell *a){
+	for(auto node : closed){
+		if((a->x == node.x) && (a->y == node.y)){
 			return node.g;
 		}
 	}
@@ -189,16 +217,18 @@ bool AstarSearch::isGoal(const AstarCell a){
 
 AstarCell AstarSearch::lowestFCostInOpen(){
 	AstarCell lowest;
+	vector<AstarCell>::iterator lowItr;
+	
 	lowest.g = 10000.00;
 	lowest.h = 10000.00;
 	
-	for(auto node : open){
-		if(calculateFCost(node) < calculateFCost(lowest)){
-			//cout << "lowest: " << node.x << " " << node.y << endl;
-			lowest = node;
+	for(vector<AstarCell>::iterator itr = open.begin(); itr != open.end(); itr++){
+		if(calculateFCost(*itr) < calculateFCost(lowest)){
+			lowest = *itr;
+			lowItr = itr;
 		}
 	}
-	
+	open.erase(lowItr);
 	return lowest;
 }
 

@@ -27,6 +27,7 @@ public:
 
 	void initialise(int startX, int startY, int goalX, int goalY);
 	void printMaze();
+	void printNode(AstarCell *a);
 
 	bool computeShortestPath(int &numOfVertexExpansions, int &maxQlen, int &vertexAccesses);
 	
@@ -49,6 +50,7 @@ private:
 	bool isGoal(AstarCell a);
 	void generateChildNodes(AstarCell &node);
 	int inOpenArray(const AstarCell *a);
+	int inClosedArray(const AstarCell *a);
 };
 
 

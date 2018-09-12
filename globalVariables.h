@@ -195,9 +195,8 @@ struct LpaStarCell
 
 struct AstarCell
 {
+	AstarCell *parent;
 	AstarCell *move[DIRECTIONS];
-	
-	double linkCost[DIRECTIONS]; 
 	
 	int x, y; 
 	double g; 
