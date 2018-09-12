@@ -189,6 +189,60 @@ void GridWorld::loadMapAndDisplay(const char* fn) //,int totalRows, int totalCol
   //getch();
 }
 
+void GridWorld::displayPathAstar()
+{
+	int cellX, cellY;
+	vertex* originVertex; 
+	vertex* neighbour; 
+	vertex* min_neighbour;
+	int neighbourY, neighbourX; 
+	double h, g;
+	double min_h, min_g;
+	
+	double totalPath;
+	
+	g=0.0;
+	h=0.0; 
+	min_g = 0.0;
+	min_h = 0.0;
+	
+	try{
+		displayHeader();
+		
+		originVertex = &map[startVertex.row][startVertex.col];
+		double min_g_plus_h = INF;
+		while(1){ 
+			min_g_plus_h = INF;
+			for(int m=0; m < DIRECTIONS; m++){
+				neighbour = originVertex->move[m];
+				if(neighbour !=NULL &&neighbour->type != '1'){
+					h = (originVertex->move[m])->h;
+					g = (originVertex->move[m])->g;
+					
+					if(min_g_plus_h > sum(g,h)){
+						min_g_plus_h = sum(g,h);
+						min_g=g;
+						min_h = h;  
+						min_neighbour = neighbour;
+					}
+				}
+			}
+			
+			totalPath = totalPath + min_h;
+						
+			setcolor(RED);
+			setlinestyle(SOLID_LINE, 1, 1);
+			line(min_neighbour->centre.x, min_neighbour->centre.y, originVertex->centre.x, originVertex->centre.y);	
+
+			originVertex = min_neighbour;
+			
+			if(originVertex == &map[goalVertex.row][goalVertex.col]) break;
+		}
+	}catch (std::ifstream::failure e) {
+		std::cerr << "Exception displaying Map\n";
+   }
+}
+
 
 //find path based on g-values and direct link cost
 void GridWorld::displayPath() 
@@ -222,14 +276,14 @@ void GridWorld::displayPath()
 							neighbour = originVertex->move[m];
 							if(neighbour != NULL && neighbour->type != '1'){
  
-                                linkCost = originVertex->linkCost[m];
+								linkCost = originVertex->linkCost[m];
 								g=(originVertex->move[m])->g;
 
 								
 								if(min_g_plus_c > sum(g,linkCost)){
 									min_g_plus_c = sum(g,linkCost);
-                                    min_g=g;
-                                    min_linkCost = linkCost;  
+									min_g=g;
+									min_linkCost = linkCost;  
 									min_neighbour = neighbour;
 								}
 								

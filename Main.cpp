@@ -184,6 +184,8 @@ void copyDisplayMapToMaze(GridWorld &gWorld, AstarSearch* astar){
 			astar->maze[i][j].type = gWorld.map[i][j].type;
 			astar->maze[i][j].x = gWorld.map[i][j].col; 
 			astar->maze[i][j].y = gWorld.map[i][j].row;
+			astar->maze[i][j].g = INF;
+			astar->maze[i][j].h = INF;
 		}
 	}
 	
@@ -398,12 +400,20 @@ void runSimulation(char *fileName){
 					copyDisplayMapToMaze(grid_world, astar_search);
 					astar_search->printMaze();
 					pf = astar_search->computeShortestPath(numExpan, maxQLen, numAcces);
+					if(!pf){
+						cout << "No Finite-Cost Path Found" << endl;
+					}else{
+						copyMazeToDisplayMap(grid_world, astar_search);
+						grid_world.displayPathAstar();
+					}
+					action = -1;
+					Sleep(1000);
 					break;
 
-                case 1001:  //ENTER KEY
-						 //calc shortest path
+				 case 1001:  //ENTER KEY
+					 //calc shortest path
 
-						 break;  
+					 break;  
 
 				case 1: //Block selected cell
 				 		

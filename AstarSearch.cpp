@@ -134,6 +134,13 @@ bool AstarSearch::computeShortestPath(int &numOfVertexExpansions, int &maxQlen, 
 		cout << "goal not found: open list is empty" << endl;
 		exit(1);
 	}
+	
+	for(auto i : closed){
+		maze[i.y][i.x].g = i.g; 
+		maze[i.y][i.x].h = i.h;
+	}
+	
+	return true;
 }
 
 void AstarSearch::printNode(AstarCell *a){
@@ -185,6 +192,9 @@ void AstarSearch::generateChildNodes(AstarCell &node){
 		node.move[i]->type = maze[y[i]][x[i]].type;
 		node.move[i]->g = cost[i];
 		node.move[i]->h = calculateH_euclid(x[i], y[i]);
+		
+		//maze[y[i]][x[i]].g = node.move[i]->g;
+		//maze[y[i]][x[i]].h = node.move[i]->h;
 	}
 }
 

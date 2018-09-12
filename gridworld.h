@@ -47,6 +47,7 @@ public:
 	void displayRLHeader(long maxEpoch);
 
 	void displayPath();
+	void displayPathAstar();
 	void displayMap();
 	void displayMapWithDetails();
 	void displayMapWithPositionDetails();
