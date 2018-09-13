@@ -1,12 +1,8 @@
 #ifndef __DSTAR_H__
 #define __DSTAR_H__
 
-#include <stdlib.h>     /* calloc, exit, free */
-#include <math.h>  //sqrt, pow
-#include<iostream>
 #include<vector>
 #include "globalVariables.h"
-#include "gridworld.h"
 #include "pqueue.h"
 
 class GridWorld; //forward declare class GridWorld to be able to create the friend functions later
@@ -21,6 +17,9 @@ public:
 	void computeShortestPath();
 	void runDstar();
 
+
+	friend void copyMazeToDisplayMap(GridWorld &gWorld, dstar* ds);
+	friend void copyDisplayMapToMaze(GridWorld &gWorld, dstar* ds);
 private:
 	vector<vector<dStarNode> > maze;
 	pqueue U;
@@ -32,6 +31,11 @@ private:
 	int rows; 
 	int cols;
 
+	void calcKey(dStarNode *node);
+	int maxValue(int v1, int v2);
+	double minValue(double g_, double rhs_);
+	double calc_H(int x, int y);
+	void updateHValues();
 };
 
 #endif
