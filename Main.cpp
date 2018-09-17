@@ -130,28 +130,7 @@ void copyMazeToDisplayMap(GridWorld &gWorld, dstar* ds){
 			  gWorld.map[i][j].key[k] = ds->maze[i][j].key[k];			  
 			}
 		}
-	}
-	
-	
-	gWorld.map[ds->start->y][ds->start->x].h = ds->start->h;
-	gWorld.map[ds->start->y][ds->start->x].g = ds->start->g;
-	gWorld.map[ds->start->y][ds->start->x].rhs = ds->start->rhs;
-	gWorld.map[ds->start->y][ds->start->x].row = ds->start->y;
-	gWorld.map[ds->start->y][ds->start->x].col = ds->start->x;
-	for(int k=0; k < 2; k++){
-		gWorld.map[ds->start->y][ds->start->x].key[k] = ds->start->key[k];			  
-	}
-	
-	
-	gWorld.map[ds->goal->y][ds->goal->x].h = ds->goal->h;
-	gWorld.map[ds->goal->y][ds->goal->x].g = ds->goal->g;
-	gWorld.map[ds->goal->y][ds->goal->x].rhs = ds->goal->rhs;
-	gWorld.map[ds->goal->y][ds->goal->x].row = ds->goal->y;
-	gWorld.map[ds->goal->y][ds->goal->x].col = ds->goal->x;
-	for(int k=0; k < 2; k++){
-		gWorld.map[ds->goal->y][ds->goal->x].key[k] = ds->goal->key[k];			  
-	}
-	
+	}	
 }
 
 //--------------------------------------------------------------
@@ -424,16 +403,6 @@ void runSimulation(char *fileName){
 	GRIDWORLD_ROWS = grid_world.getGridWorldRows();
 	GRIDWORLD_COLS = grid_world.getGridWorldCols();
 	
-	//----------------------------------------------------------------
-	//D* Lite 
-	/*dstarLite = new dstar(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
-	start = grid_world.getStartVertex();
-	goal = grid_world.getGoalVertex();
-	copyDisplayMapToMaze(grid_world, dstarLite);
-	dstarLite->runDstar(start.col, start.row, goal.col, goal.row);
-	copyMazeToDisplayMap(grid_world, dstarLite);
-	setvisualpage(page);
-	*/
 	// keep running the program until the ESC key is pressed   
 	while((GetAsyncKeyState(VK_ESCAPE)) == 0 ) {
 			setactivepage(page);
@@ -476,7 +445,16 @@ void runSimulation(char *fileName){
 
 				 case 1001:  //ENTER KEY
 					 //calc shortest path
-
+				 
+					//----------------------------------------------------------------
+					//D* Lite 
+					dstarLite = new dstar(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
+					start = grid_world.getStartVertex();
+					goal = grid_world.getGoalVertex();
+					copyDisplayMapToMaze(grid_world, dstarLite);
+					dstarLite->runDstar(start.col, start.row, goal.col, goal.row);
+					copyMazeToDisplayMap(grid_world, dstarLite);
+					grid_world.displayPath();
 					 break;  
 
 				case 1: //Block selected cell
@@ -740,14 +718,15 @@ void runSimulation(char *fileName){
 
                  
 
-					  rowSelected = p.row;
-					  colSelected = p.col;
+					rowSelected = p.row;
+					colSelected = p.col;
 					  
-					  sprintf(info,"row: %d, col: %d",rowSelected, colSelected); 
-				      drawInformationPanel(grid_world.getFieldX2(),grid_world.getFieldY1() + textheight("H")*6, info);
+					sprintf(info,"row: %d, col: %d",rowSelected, colSelected); 
+					drawInformationPanel(grid_world.getFieldX2(),grid_world.getFieldY1() + textheight("H")*6, info);
 			      
 				  
 			  }
+			  grid_world.displayPath();
 			  setvisualpage(page);
 			  page = !page;  //switch to another page
 	}

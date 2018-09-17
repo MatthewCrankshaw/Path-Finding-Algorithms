@@ -16,6 +16,7 @@ public:
 	void remove(dStarNode v);
 	bool exists(int x, int y);
 	dStarNode pop(); 
+	dStarNode top();
 	void topkey(double *key); 
 	void printqueue();
 	int comparepriorities(dStarNode a, dStarNode b);

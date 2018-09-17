@@ -88,6 +88,21 @@ void pqueue::topkey(double *key){
 	key[1] = ret.key[1];
 }
 
+dStarNode pqueue::top(){
+	if(vect.empty()){
+		cout << "Error: vect empty!!" << endl;
+		exit(1);
+	}
+	dStarNode ret = *vect.begin(); 
+	for(auto i : vect){
+		if(comparepriorities(i, ret) == -1){
+			ret = i;
+		}
+	}
+	
+	return ret;
+}
+
 bool pqueue::exists(int x, int y){
 	for(auto i : vect){ 
 		if(i.x == x && i.y == y){

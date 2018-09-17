@@ -28,6 +28,13 @@ private:
 	int rows; 
 	int cols;
 
+	const double diag = sqrt(2);
+	const double cost[8] = {
+		diag, 1, diag,
+		1      , 1,
+		diag, 1, diag
+	};
+
 	void initialise(int startX, int startY, int goalX, int goalY);
 	void updateVertex(dStarNode s);	
 	void computeShortestPath();

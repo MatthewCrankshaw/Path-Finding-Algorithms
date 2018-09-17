@@ -32,11 +32,13 @@ void dstar::initialise(int startX, int startY, int goalX, int goalY){
 	start->y = startY; 
 	start->rhs = INF; 
 	start->g = INF;
+	start->type = '6';
 	
 	goal->x = goalX; 
 	goal->y = goalY;
 	goal->rhs = 0;
 	goal->g = INF;
+	goal->type = '7';
 	
 	// clear the priority queue
 	U.clearQueue();
@@ -55,6 +57,7 @@ void dstar::initialise(int startX, int startY, int goalX, int goalY){
 	updateHValues();
 	//Calculate the key of the goal
 	calcKey(goal);
+	
 	maze[goal->y][goal->x].key[0] = goal->key[0];
 	maze[goal->y][goal->x].key[1] = goal->key[1];
 	
@@ -63,7 +66,6 @@ void dstar::initialise(int startX, int startY, int goalX, int goalY){
 }
 
 void dstar::runDstar(int startX, int startY, int goalX, int goalY){
-	cout << "run dstar search" << endl;
 	initialise(startX, startY, goalX, goalY);
 	computeShortestPath();
 }
@@ -71,23 +73,32 @@ void dstar::runDstar(int startX, int startY, int goalX, int goalY){
 void dstar::computeShortestPath(){
 	cout << "compute shortest path dstar" << endl;
 	
-	double a[2];
-	
-	U.topkey(a);
-	
 	while(shouldLoop()){
 		//set kold to be the smallest k
-		double kold[2];
-		U.topkey(kold);
-		//pull the smallest k node off the priority queue
-		dStarNode u = U.pop();
-		calcKey(&u);
+		double kold[2], knew[2];
+		dStarNode u, old;
+
+		u = U.top();
+		old = U.top();
 		
-		if(smallerKey(kold, u.key)){
-			U.insert(u);
-		}else if(u.g > u.rhs){ 
-			u.g = u.rhs;
+		U.topkey(kold);
+		
+		calcKey(&u);
+		knew[0] = u.key[0];
+		knew[1] = u.key[1];
+		
+		if(smallerKey(kold, knew)){
+			u.key[0] = knew[0]; 
+			u.key[1] = knew[1];
+			U.update(u);
 			maze[u.y][u.x] = u;
+		}else if(u.g > u.rhs){
+			cout << "g is greater than rhs" << endl;
+			cout << "x " << u.x << " y " << u.y << " g: " << u.g << " rhs " << u.rhs << endl;
+			u.g = u.rhs;
+			U.remove(u);
+			maze[u.y][u.x] = u;
+			
 			for(int i = 0; i < DIRECTIONS; i++){
 				int x[8] = {u.x-1, u.x, u.x+1, u.x-1, u.x+1, u.x-1, u.x, u.x+1};
 				int y[8] = {u.y-1, u.y-1, u.y-1, u.y, u.y, u.y+1, u.y+1, u.y+1};
@@ -98,10 +109,22 @@ void dstar::computeShortestPath(){
 				if(maze[y[i]][x[i]].type == '1') continue;
 				
 				dStarNode s = maze[y[i]][x[i]];
+				cout << "x " << x[i] << " y  " << y[i] << endl; 
+				cout << "not goal " << s.x << " " << s.y << endl;
+				if(s.x != goal->x || s.y != goal->y){
+					s.rhs = minValue(s.rhs, cost[i] + u.g);
+					maze[s.y][s.x] = s;
+				}
 				updateVertex(s);
 			}
 		}else{
+			cout << "here" << endl;
+			old.g = u.g;
+			maze[old.y][old.x] = old;
 			u.g = INF;
+			maze[u.y][u.x] = u;
+			
+			
 			for(int i = 0; i < DIRECTIONS; i++){
 				int x[9] = {u.x-1, u.x, u.x+1, u.x-1, u.x ,u.x+1, u.x-1, u.x, u.x+1};
 				int y[9] = {u.y-1, u.y-1, u.y-1, u.y, u.y, u.y, u.y+1, u.y+1, u.y+1};
@@ -112,61 +135,45 @@ void dstar::computeShortestPath(){
 				if(maze[y[i]][x[i]].type == '1') continue;
 				
 				dStarNode s = maze[y[i]][x[i]];
+				if(s.rhs == cost[i] + old.g){
+					if(s.x != goal->x || s.y != goal->y){
+						double min = INF;
+						for(int j = 0; j < DIRECTIONS; j++){
+							int x[8] = {s.x-1, s.x, s.x+1, s.x-1, s.x+1, s.x-1, s.x, s.x+1};
+							int y[8] = {s.y-1, s.y-1, s.y-1, s.y, s.y, s.y+1, s.y+1, s.y+1};
+								
+							if(x[i] < 0 || y[i] < 0 || x[i] > cols || y[i] > rows){
+								continue;
+							}
+							if(maze[y[i]][x[i]].type == '1') continue;
+								
+							if(maze[y[i]][x[i]].g + cost[i] < min){
+								min = maze[y[i]][x[i]].g + cost[i];
+							}
+						}
+						s.rhs = min;
+						cout << "min " << min;
+						maze[y[i]][x[i]] = s;
+					}
+				}
 				updateVertex(s);
+				maze[s.y][s.x] = s;
 			}
 		}
-		U.printqueue();
-		cout << endl;
-		for(int i = 0; i < rows; i++){
-			for(int j = 0; j < cols; j++){
-				cout << "[" << maze[i][j].type << " {" << maze[i][j].key[0] << " " << maze[i][j].key[1] << "} " << maze[i][j].g << " " << maze[i][j].rhs << "]";
-			}
-			cout << endl;
-		}	
-		cout << endl;
-		break;
 	}
-	
 }
 
 void dstar::updateVertex(dStarNode s){
-	cout << "update vertex dstar" << endl;
-	
-	if(s.x != goal->x && s.y != goal->y){ 
-		cout << "updating not goal" << endl;
-		double min = INF;
-		for(int i = 0; i < DIRECTIONS; i++){
-			int x[8] = {s.x-1, s.x, s.x+1, s.x-1 ,s.x+1, s.x-1, s.x, s.x+1};
-			int y[8] = {s.y-1, s.y-1, s.y-1, s.y, s.y, s.y+1, s.y+1, s.y+1};
-			
-			if(x[i] < 0 || y[i] < 0 || x[i] > cols || y[i] > rows){
-				continue;
-			}
-			
-			if(maze[y[i]][x[i]].type == '1') continue;
-			cout << x[i] << " " << y[i] << endl;
-				
-			cout << "cost s: " << s.g << " cost of succ " << maze[y[i]][x[i]].g << endl;
-			
-			double c = s.g + maze[y[i]][x[i]].g;
-			if(c < min){
-				min = c;
-			}
-		}
-		if(min == INF) min = 1;
-		cout << "min " << min << endl;
-		s.rhs = min;
-		maze[s.y][s.x] = s;
-	}
-	if(U.exists(s.x,s.y)){
-		cout << "s exists in priority queue - update " << endl;
-		U.remove(s);
-	}
-	if(s.g != s.rhs){
-		cout << "s g does not = s rhs ... insert to queue - update " << endl;
+	if((s.g != s.rhs) && (U.exists(s.x, s.y))){
 		calcKey(&s);
+		U.update(s);
 		maze[s.y][s.x] = s;
+	}else if((s.g != s.rhs) && (!U.exists(s.x, s.y))){
+		calcKey(&s);
 		U.insert(s);
+		maze[s.y][s.x] = s;
+	}else if((s.g == s.rhs) && (U.exists(s.x, s.y))){
+		U.remove(s);
 	}
 }
 
@@ -186,14 +193,13 @@ bool dstar::smallerKey(double *a, double*b){
 
 bool dstar::shouldLoop(){
 	double top[2]; 
-	
 	U.topkey(top);
 	calcKey(start);
 	
 	if(smallerKey(top, start->key)){
 		return true;
 	}else{
-		if(start->rhs != start->g) return true;
+		if(start->rhs > start->g) return true;
 		else return false;
 	}
 }
@@ -228,6 +234,11 @@ double dstar::calc_H(int x, int y){
 	
 	int diffY = abs(start->y - y);
 	int diffX = abs(start->x - x);
+	
+	//int p1 = pow(diffY, 2);
+	//int p2 = pow(diffX, 2);
+	
+	//return (double)sqrt(p1 + p2);
 	
 	//maze[y][x].h = (double)maxValue(diffY, diffX);
 	return (double)maxValue(diffY, diffX);

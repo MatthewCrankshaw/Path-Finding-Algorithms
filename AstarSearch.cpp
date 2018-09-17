@@ -28,6 +28,9 @@ AstarSearch::AstarSearch(int rows_, int cols_){
 AstarSearch::~AstarSearch(){
 	free(start);
 	free(goal);
+	for(auto i : closed){
+		free(i.parent);
+	}
 }
 
 void AstarSearch::initialise(int startX, int startY, int goalX, int goalY){
@@ -74,7 +77,9 @@ vector<AstarCell> AstarSearch::computeShortestPath(int &numOfVertexExpansions, i
 			cout << "Goal Found!" << endl;
 			AstarCell *p; 
 			p = &node_current; 
-			for(;;){
+			
+			//forever
+			for(;"ever";){
 				if(p == NULL){
 					break;
 				}

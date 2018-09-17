@@ -40,7 +40,7 @@ private:
 	int rows; 
 	int cols;
 
-	//The costs are set
+	//The g costs based on which direction
 	const double diag = sqrt(2);
 	const double cost[8] = {
 		diag, 1, diag,
