@@ -8,13 +8,10 @@
 #include <assert.h>
 #include "globalVariables.h"
 
+
+#define DISTANCE_CALC 0 //1 = Euclidean : 0 = Manhattan
+
 class GridWorld;
-
-//extern int goal_x, goal_y;
-//extern int start_x, start_y;
-
-//~ extern int numberOfExpandedStates;
-//extern int numberOfVertexAccesses;
 
 class AstarSearch { 
 public: 
@@ -29,11 +26,13 @@ public:
 	void printMaze();
 	void printNode(AstarCell *a);
 
-	bool computeShortestPath(int &numOfVertexExpansions, int &maxQlen, int &vertexAccesses);
+	vector<AstarCell> computeShortestPath(int &numOfVertexExpansions, int &maxQlen, int &vertexAccesses);
 	
 private: 
 	vector<vector<AstarCell> > maze;
 	vector<AstarCell> open, closed;
+
+	vector<AstarCell> final_path;
 
 	AstarCell * start; 
 	AstarCell * goal;

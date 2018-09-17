@@ -12,10 +12,7 @@ class dstar {
 public:
 	dstar(int rows_, int cols_);
 	~dstar();
-	void initialise(int startX, int startY, int goalX, int goalY);
-	void updateVertex();	
-	void computeShortestPath();
-	void runDstar();
+	void runDstar(int startX, int startY, int goalX, int goalY);
 
 
 	friend void copyMazeToDisplayMap(GridWorld &gWorld, dstar* ds);
@@ -31,6 +28,12 @@ private:
 	int rows; 
 	int cols;
 
+	void initialise(int startX, int startY, int goalX, int goalY);
+	void updateVertex(dStarNode s);	
+	void computeShortestPath();
+
+	bool smallerKey(double *a, double*b);
+	bool shouldLoop();
 	void calcKey(dStarNode *node);
 	int maxValue(int v1, int v2);
 	double minValue(double g_, double rhs_);

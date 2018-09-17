@@ -132,6 +132,7 @@ void copyMazeToDisplayMap(GridWorld &gWorld, dstar* ds){
 		}
 	}
 	
+	
 	gWorld.map[ds->start->y][ds->start->x].h = ds->start->h;
 	gWorld.map[ds->start->y][ds->start->x].g = ds->start->g;
 	gWorld.map[ds->start->y][ds->start->x].rhs = ds->start->rhs;
@@ -407,7 +408,7 @@ void runSimulation(char *fileName){
 	
 	//----------------------------------------------------------------
 	//ASTAR
-	bool pf;
+	vector<AstarCell> path;
 	int numExpan = 0, maxQLen = 0, numAcces = 0;
 	vertex start, goal;
 	
@@ -425,21 +426,20 @@ void runSimulation(char *fileName){
 	
 	//----------------------------------------------------------------
 	//D* Lite 
-	dstarLite = new dstar(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
+	/*dstarLite = new dstar(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
 	start = grid_world.getStartVertex();
 	goal = grid_world.getGoalVertex();
-	dstarLite->initialise(start.col, start.row, goal.col, goal.row);
 	copyDisplayMapToMaze(grid_world, dstarLite);
-	dstarLite->runDstar();
+	dstarLite->runDstar(start.col, start.row, goal.col, goal.row);
 	copyMazeToDisplayMap(grid_world, dstarLite);
-	//setvisualpage(page);
-	
+	setvisualpage(page);
+	*/
 	// keep running the program until the ESC key is pressed   
 	while((GetAsyncKeyState(VK_ESCAPE)) == 0 ) {
-			 setactivepage(page);
-			 cleardevice();
+			setactivepage(page);
+			cleardevice();
 	
-		     action = getKey(); 
+			action = getKey(); 
 		
 		     if(SHOW_MAP_DETAILS) 
 				 grid_world.displayMapWithDetails();
@@ -459,13 +459,19 @@ void runSimulation(char *fileName){
 					astar_search->initialise(start.col, start.row, goal.col, goal.row);
 					copyDisplayMapToMaze(grid_world, astar_search);
 					astar_search->printMaze();
-					pf = astar_search->computeShortestPath(numExpan, maxQLen, numAcces);
-					if(!pf){
-						cout << "No Finite-Cost Path Found" << endl;
-					}else{
-						copyMazeToDisplayMap(grid_world, astar_search);
-						grid_world.displayPathAstar();
-					}
+					path = astar_search->computeShortestPath(numExpan, maxQLen, numAcces);
+					
+					copyMazeToDisplayMap(grid_world, astar_search);
+					grid_world.displayPathAstar(path);
+					
+					cout << "Max Queue Length: " << maxQLen << endl;
+					cout << "Number of State Expansions: " << numExpan << endl;
+					cout << "Path Length: " << path.size() << endl;
+					
+					Sleep(100);
+					getch();
+					action = -1; 
+					
 					break;
 
 				 case 1001:  //ENTER KEY

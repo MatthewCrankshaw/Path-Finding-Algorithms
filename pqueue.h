@@ -14,6 +14,7 @@ public:
 	void insert(dStarNode v);
 	void update(dStarNode v);
 	void remove(dStarNode v);
+	bool exists(int x, int y);
 	dStarNode pop(); 
 	void topkey(double *key); 
 	void printqueue();

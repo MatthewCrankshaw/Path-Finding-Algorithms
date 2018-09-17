@@ -49,9 +49,18 @@ void AstarSearch::initialise(int startX, int startY, int goalX, int goalY){
 
 
 
-bool AstarSearch::computeShortestPath(int &numOfVertexExpansions, int &maxQlen, int &vertexAccesses){
+vector<AstarCell> AstarSearch::computeShortestPath(int &numOfVertexExpansions, int &maxQlen, int &vertexAccesses){
 	// First put the starting node into the open list
-	start->h = calculateH_euclid(start->x, start->y);
+	
+	maxQlen = 0;
+	
+	//change to switch between manhattan distance calculation and Euclidean
+	if(DISTANCE_CALC == 1){ 
+		start->h = calculateH_euclid(start->x, start->y);
+	}else{
+		start->h = calculateH_euclid(start->x, start->y);
+	}
+	
 	start->g = 0;
 	start->parent = NULL;
 	open.push_back(*start);
@@ -63,6 +72,15 @@ bool AstarSearch::computeShortestPath(int &numOfVertexExpansions, int &maxQlen, 
 		//if the current node is the goal node then you have found the goal
 		if(isGoal(node_current)){
 			cout << "Goal Found!" << endl;
+			AstarCell *p; 
+			p = &node_current; 
+			for(;;){
+				if(p == NULL){
+					break;
+				}
+				final_path.push_back(*p);
+				p = p->parent;
+			}
 			break;
 		}
 		//generate the successor nodes
@@ -87,6 +105,9 @@ bool AstarSearch::computeShortestPath(int &numOfVertexExpansions, int &maxQlen, 
 					if(closedG <= currCost) continue;
 				}else{ //is not in any list
 					open.push_back(*next);
+					if(open.size() > maxQlen){ 
+						maxQlen = open.size();
+					}
 				}
 			}
 		}
@@ -102,8 +123,14 @@ bool AstarSearch::computeShortestPath(int &numOfVertexExpansions, int &maxQlen, 
 		maze[i.y][i.x].g = i.g; 
 		maze[i.y][i.x].h = i.h;
 	}
+	numOfVertexExpansions = closed.size();
 	
-	return true;
+	cout << "Path is: " << endl;
+	for(auto i : final_path){ 
+		cout << "X: " << i.x << " Y: " << i.y << endl;
+	}
+	
+	return final_path;
 }
 
 void AstarSearch::printNode(AstarCell *a){
@@ -154,10 +181,15 @@ void AstarSearch::generateChildNodes(AstarCell &node){
 		node.move[i]->y = y[i];
 		node.move[i]->type = maze[y[i]][x[i]].type;
 		node.move[i]->g = cost[i];// + node.g;
-		node.move[i]->h = calculateH_euclid(x[i], y[i]);
-		
-		maze[y[i]][x[i]].g = node.move[i]->g;
-		maze[y[i]][x[i]].h = node.move[i]->h;
+		if(DISTANCE_CALC == 1){ 
+			node.move[i]->h = calculateH_euclid(x[i], y[i]);;
+		}else{
+			node.move[i]->h = calculateH_manhat(x[i], y[i]);
+		}
+		node.move[i]->parent = new AstarCell;
+		node.move[i]->parent->x = node.x; 
+		node.move[i]->parent->y = node.y; 
+		node.move[i]->parent->parent = node.parent;
 	}
 }
 
@@ -195,15 +227,15 @@ AstarCell AstarSearch::lowestFCostInOpen(){
 	
 	lowest.g = 10000.00;
 	lowest.h = 10000.00;
-	cout << "========================================================" << endl;
+	//cout << "========================================================" << endl;
 	for(vector<AstarCell>::iterator itr = open.begin(); itr != open.end(); itr++){
-		printNode(&(*itr));
+		//printNode(&(*itr));
 		if(calculateFCost(*itr) < calculateFCost(lowest)){
 			lowest = *itr;
 			lowItr = itr;
 		}
 	}
-	cout << "=========================================================" << endl;
+	//cout << "=========================================================" << endl;
 	open.erase(lowItr);
 	return lowest;
 }

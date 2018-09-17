@@ -88,6 +88,15 @@ void pqueue::topkey(double *key){
 	key[1] = ret.key[1];
 }
 
+bool pqueue::exists(int x, int y){
+	for(auto i : vect){ 
+		if(i.x == x && i.y == y){
+			return true;
+		}
+	}
+	return false;
+}
+
 void pqueue::clearQueue(){
 	vect.clear();
 }
@@ -95,7 +104,7 @@ void pqueue::clearQueue(){
 
 void pqueue::printqueue(){ 
 	for(auto i : vect){
-		cout << i.x << " " << i.y << " " << i.rhs<< " "  << i.g<< " "  << i.key[0] << " " << i.key[1]<< " "  << endl;
+		cout << i.x << " " << i.y << " " << i.rhs<< " "  << i.g<< " {"  << i.key[0] << " " << i.key[1]<< "} "  << endl;
 	}
 }
 
