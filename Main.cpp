@@ -390,6 +390,7 @@ void runSimulation(char *fileName){
 	vector<AstarCell> path;
 	int numExpan = 0, maxQLen = 0, numAcces = 0;
 	vertex start, goal;
+	clock_t t, timePassed;
 	
 	//----------------------------------------------------------------
 	//LPA*
@@ -419,25 +420,25 @@ void runSimulation(char *fileName){
 			 	case 1000:
 					//Code will go here for testing purposes
 					//Space Key
+					t = clock();
 					astar_search = new AstarSearch(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
 					start = grid_world.getStartVertex();
 					goal = grid_world.getGoalVertex();
-					cout << "(start.col = " << start.col << ", start.row = " << start.row << ")" << endl;
-					cout << "(goal.col = " << goal.col << ", goal.row = " << goal.row << ")" << endl;
 
 					astar_search->initialise(start.col, start.row, goal.col, goal.row);
 					copyDisplayMapToMaze(grid_world, astar_search);
-					astar_search->printMaze();
 					path = astar_search->computeShortestPath(numExpan, maxQLen, numAcces);
-					
+					timePassed = clock() - t;
+				
 					copyMazeToDisplayMap(grid_world, astar_search);
 					grid_world.displayPathAstar(path);
 					
 					cout << "Max Queue Length: " << maxQLen << endl;
 					cout << "Number of State Expansions: " << numExpan << endl;
 					cout << "Path Length: " << path.size() << endl;
+					cout << "Time Taken: " << ((float)timePassed/CLOCKS_PER_SEC) << endl;
 					
-					Sleep(100);
+					Sleep(200);
 					getch();
 					action = -1; 
 					
@@ -448,14 +449,20 @@ void runSimulation(char *fileName){
 				 
 					//----------------------------------------------------------------
 					//D* Lite 
+					t = clock();
 					dstarLite = new dstar(grid_world.getGridWorldRows(), grid_world.getGridWorldCols());
 					start = grid_world.getStartVertex();
 					goal = grid_world.getGoalVertex();
+					timePassed = clock() - t;
 					copyDisplayMapToMaze(grid_world, dstarLite);
+					t = clock();
 					dstarLite->runDstar(start.col, start.row, goal.col, goal.row);
+					timePassed += clock() - t;
 					copyMazeToDisplayMap(grid_world, dstarLite);
 					grid_world.displayPath();
-					 break;  
+					cout << "Max Q Length: " << dstarLite->getMaxQLen();
+					cout << "Total time taken: " << ((float)timePassed/CLOCKS_PER_SEC) << endl;
+					break;  
 
 				case 1: //Block selected cell
 				 		
@@ -726,7 +733,7 @@ void runSimulation(char *fileName){
 			      
 				  
 			  }
-			  grid_world.displayPath();
+			  //grid_world.displayPath();
 			  setvisualpage(page);
 			  page = !page;  //switch to another page
 	}
@@ -776,8 +783,8 @@ int main(int argc, char *argv[]) {
 	//initgraph(&graphDriver, &graphMode, "", 1440, 900); // Start Window
  	//initgraph(&graphDriver, &graphMode, "", 1280, 1024); // Start Window
 	
-   initgraph(&graphDriver, &graphMode, "", 1360, 768); // Start Window - LAPTOP SCREEN
-	//initgraph(&graphDriver, &graphMode, "", 1920, 1080); // Start Window - Full-HD
+   //initgraph(&graphDriver, &graphMode, "", 1800, 1000); // Start Window - LAPTOP SCREEN
+	initgraph(&graphDriver, &graphMode, "", 1920, 1080); // Start Window - Full-HD
 	
    BACKGROUND_COLOUR = WHITE;
    LINE_COLOUR = GREEN;

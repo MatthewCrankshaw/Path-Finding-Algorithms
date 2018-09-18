@@ -17,6 +17,8 @@ dstar::dstar(int rows_, int cols_){
 
 dstar::~dstar(){ 
 	//dtor
+	maxQLen = 0;
+	numExpan = 0;
 	free(start);
 	free(goal);
 }
@@ -71,8 +73,6 @@ void dstar::runDstar(int startX, int startY, int goalX, int goalY){
 }
 
 void dstar::computeShortestPath(){
-	cout << "compute shortest path dstar" << endl;
-	
 	while(shouldLoop()){
 		//set kold to be the smallest k
 		double kold[2], knew[2];
@@ -88,6 +88,7 @@ void dstar::computeShortestPath(){
 		knew[1] = u.key[1];
 		
 		if(smallerKey(kold, knew)){
+			cout << "kold smaller than knew" << endl;
 			u.key[0] = knew[0]; 
 			u.key[1] = knew[1];
 			U.update(u);
@@ -118,7 +119,7 @@ void dstar::computeShortestPath(){
 				updateVertex(s);
 			}
 		}else{
-			cout << "here" << endl;
+			cout << "else" << endl;
 			old.g = u.g;
 			maze[old.y][old.x] = old;
 			u.g = INF;
@@ -160,7 +161,9 @@ void dstar::computeShortestPath(){
 				maze[s.y][s.x] = s;
 			}
 		}
+		cout << "in while loop " << endl;
 	}
+	cout << "compute shortest path exit " << endl;
 }
 
 void dstar::updateVertex(dStarNode s){
@@ -171,6 +174,7 @@ void dstar::updateVertex(dStarNode s){
 	}else if((s.g != s.rhs) && (!U.exists(s.x, s.y))){
 		calcKey(&s);
 		U.insert(s);
+		if(maxQLen < U.size()) maxQLen += 1;
 		maze[s.y][s.x] = s;
 	}else if((s.g == s.rhs) && (U.exists(s.x, s.y))){
 		U.remove(s);
@@ -230,28 +234,46 @@ void dstar::calcKey(dStarNode *node){
 	node->key[1] = key2;
 }
 
-double dstar::calc_H(int x, int y){
+double dstar::calc_H_euclid(int x, int y){
 	
 	int diffY = abs(start->y - y);
 	int diffX = abs(start->x - x);
 	
-	//int p1 = pow(diffY, 2);
-	//int p2 = pow(diffX, 2);
+	int p1 = pow(diffY, 2);
+	int p2 = pow(diffX, 2);
 	
-	//return (double)sqrt(p1 + p2);
-	
-	//maze[y][x].h = (double)maxValue(diffY, diffX);
+	return (double)sqrt(p1 + p2);
+}
+
+double dstar::calc_H_manhat(int x, int y){
+	int diffY = abs(start->y - y);
+	int diffX = abs(start->x - x);
 	return (double)maxValue(diffY, diffX);
 }
 
 void dstar::updateHValues(){
-	for(int i=0; i < rows; i++){
-	   for(int j=0; j < cols; j++){
-		   maze[i][j].h = calc_H(j, i);
+	if(DISTANCE_CALC == 1){
+		for(int i=0; i < rows; i++){
+			for(int j=0; j < cols; j++){
+				maze[i][j].h = calc_H_euclid(j, i);
+			}
 		}
+		
+		start->h = calc_H_euclid(start->x, start->y);
+		goal->h = calc_H_euclid(goal->x, goal->y);
+	}else{
+		for(int i=0; i < rows; i++){
+			for(int j=0; j < cols; j++){
+				maze[i][j].h = calc_H_manhat(j, i);
+			}
+		}
+		
+		start->h = calc_H_manhat(start->x, start->y);
+		goal->h = calc_H_manhat(goal->x, goal->y);
 	}
-	
-	start->h = calc_H(start->x, start->y);
-	goal->h = calc_H(goal->x, goal->y);
+}
+
+unsigned dstar::getMaxQLen(){ 
+	return maxQLen;
 }
 

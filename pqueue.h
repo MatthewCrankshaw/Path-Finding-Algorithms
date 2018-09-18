@@ -15,6 +15,7 @@ public:
 	void update(dStarNode v);
 	void remove(dStarNode v);
 	bool exists(int x, int y);
+	unsigned size();
 	dStarNode pop(); 
 	dStarNode top();
 	void topkey(double *key); 

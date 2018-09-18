@@ -209,7 +209,6 @@ void GridWorld::displayPathAstar(vector<AstarCell> a)
 				for(int m=0; m < DIRECTIONS; m++){
 					neighbour = originVertex->move[m];
 					if(neighbour !=NULL &&neighbour->type != '1'){
-						cout << "col " << neighbour->col << " row " << neighbour->row << " x " << it->x << " y " << it->y << endl;
 						if(neighbour->col == it->x && neighbour->row == it->y){
 							nextNeighbour = neighbour;
 							setcolor(RED);

@@ -112,6 +112,10 @@ bool pqueue::exists(int x, int y){
 	return false;
 }
 
+unsigned pqueue::size(){ 
+	return vect.size();
+}
+
 void pqueue::clearQueue(){
 	vect.clear();
 }

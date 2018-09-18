@@ -103,10 +103,8 @@ vector<AstarCell> AstarSearch::computeShortestPath(int &numOfVertexExpansions, i
 				closedG = inClosedArray(next);
 				
 				if(openG != -1){
-					//cout << "og" << openG << " i " << i << endl;
 					if(openG <= currCost) continue;
 				}else if(closedG != -1){ //is in the closed list
-					//cout << "cg" << closedG << endl;
 					if(closedG <= currCost) continue;
 				}else{ //is not in any list
 					open.push_back(*next);
@@ -116,7 +114,7 @@ vector<AstarCell> AstarSearch::computeShortestPath(int &numOfVertexExpansions, i
 				}
 			}
 		}
-		printNode(&node_current);
+		//printNode(&node_current);
 		closed.push_back(node_current);
 	}
 	if(!isGoal(node_current)){
@@ -232,7 +230,6 @@ AstarCell AstarSearch::lowestFCostInOpen(){
 	
 	lowest.g = 10000.00;
 	lowest.h = 10000.00;
-	//cout << "========================================================" << endl;
 	for(vector<AstarCell>::iterator itr = open.begin(); itr != open.end(); itr++){
 		//printNode(&(*itr));
 		if(calculateFCost(*itr) < calculateFCost(lowest)){
@@ -240,7 +237,6 @@ AstarCell AstarSearch::lowestFCostInOpen(){
 			lowItr = itr;
 		}
 	}
-	//cout << "=========================================================" << endl;
 	open.erase(lowItr);
 	return lowest;
 }
